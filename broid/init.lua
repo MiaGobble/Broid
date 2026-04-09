@@ -1,8 +1,10 @@
+-- Author: iGottic
 local broid = {}
 
 -- Imports
 local drawCache = require("broid.drawCache")
 
+-- Members
 broid.new = require("broid.new")
 broid.enum = require("broid.enum")
 broid.value = require("broid.value")
@@ -14,6 +16,7 @@ broid.destroyed = require("broid.destroyed")
 broid.scope = require("broid.scope")
 broid.event = require("broid.event")
 
+-- Draw callback
 function broid.draw()
     for _, drawFunction in pairs(drawCache.getDrawFunctions()) do
         local success, issue = pcall(drawFunction)
