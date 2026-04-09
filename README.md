@@ -67,3 +67,64 @@ This is an extremely opinionated approach to solving this problem. Instead of a 
 
 ## This page is empty!
 Correct. This is a WIP that I'm leaving public while I work on it. Expect more here soon!
+
+## Progress so far
+So far, the following is working from Seam:
+* `new`
+* `computed`
+* `destroyed`
+* `getValue`
+* `isState`
+* `lifetime`
+* `scope`
+* `spring`
+* `tags`
+* `value`
+
+And these still need to be added:
+* `component`
+* `eventSequence`
+* `onChanged`
+* `onEvent`
+* `onAttached`
+* `setValue`
+* `isComponent`
+* `lockValue`
+* `inspect`
+
+However, the following will not be ported over since they are not needed in Love2D:
+* `followProperty`
+* `followAttribute`
+* `attribute`
+* `tween`
+* `forPairs`
+* `children`
+* `onEvent`
+* `onAttributeChanged`
+
+I've also added these, which are specific to Broid:
+* `enum`
+* `event`
+* `draw()`
+
+As I work on this and learn more about Love2D, I might make more changes, add/remove features, etc.
+
+## Supported elements
+Refer to the below table to know what is supported, and to what degree
+
+| Element type | Supports render | Supports input |
+|--------------|-----------------|----------------|
+| Arc | ✖ | ✖ |
+| Circle | ✔ | ✔ |
+| Drawable | ✖ | ✖ |
+| Mesh | ✖ | ✖ |
+| Array Texture | ✖ | ✖ |
+| Quad | ✖ | ✖ |
+| Ellipse | ✖ | ✖ |
+| Line | ✖ | ✖ |
+| Points | ✖ | ✖ |
+| Polygon | ✖ | ✖ |
+| Text | ✖ | ✖ |
+| Rectangle | ✖ | ✖ |
+| Stencil | ✖ | ✖ |
+| Triangle | ✖ | ✖ |
