@@ -1,3 +1,10 @@
+-- Author: iGottic
+
+--[[
+    This is a script to test Broid's functionality as I develop it.
+    It isn't always going to be best practice, but it's a good way to test things out and make sure they work as intended.
+--]]
+
 -- Imports
 local broid = require("broid")
 local timer = require("timer")
