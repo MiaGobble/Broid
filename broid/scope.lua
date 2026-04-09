@@ -1,5 +1,4 @@
 -- Author: iGottic
-
 local scope = {}
 
 -- Imports
