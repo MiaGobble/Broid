@@ -10,8 +10,10 @@ local destroyed = require("broid.destroyed")
 local symbol = require("broid.modules.symbol")
 local value = require("broid.value")
 local event = require("broid.event")
+
 local elements = {
-    circle = require(path .. ".circle")
+    circle = require(path .. ".circle"),
+    text = require(path .. ".text")
 }
 
 -- Variables

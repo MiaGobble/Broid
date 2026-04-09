@@ -17,10 +17,13 @@ function love.load()
     local scope = broid.scope(broid)
     local isMoved = scope:value(false)
 
-    local object = scope:new("circle", {
-        drawMode = enum.drawMode.fill,
-        radius = 200,
-        segments = 20,
+    local object = scope:new("text", {
+        text = "Hello, Broid!",
+
+        rotation = scope:rendered(function()
+            local time = os.clock()
+            return time * 20
+        end),
 
         x = scope:spring(scope:computed(function(use)
             if use(isMoved) then

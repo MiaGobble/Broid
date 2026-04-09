@@ -5,4 +5,11 @@ enum.drawMode = {
     line = "line",
 }
 
+enum.alignMode = {
+    left = "left",
+    center = "center",
+    right = "right",
+    justify = "justify",
+}
+
 return enum

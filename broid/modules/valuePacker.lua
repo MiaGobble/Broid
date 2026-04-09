@@ -30,12 +30,6 @@ converter.number = {
 
 converter.color3 = {
 	Pack = function(unpackedValue)
-		print("r")
-		print(unpackedValue[1])
-		print("g")
-		print(unpackedValue[2])
-		print("b")
-		print(unpackedValue[3])
 		return oklab.from({X = unpackedValue[1], Y = unpackedValue[2], Z = unpackedValue[3]}, false)
 	end,
 

@@ -124,7 +124,7 @@ Refer to the below table to know what is supported, and to what degree
 | Line | ✖ | ✖ |
 | Points | ✖ | ✖ |
 | Polygon | ✖ | ✖ |
-| Text | ✖ | ✖ |
+| Text | ✔ | ✔ |
 | Rectangle | ✖ | ✖ |
 | Stencil | ✖ | ✖ |
 | Triangle | ✖ | ✖ |
