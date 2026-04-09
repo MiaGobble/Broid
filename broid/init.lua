@@ -15,6 +15,8 @@ broid.tags = require("broid.tags")
 broid.destroyed = require("broid.destroyed")
 broid.scope = require("broid.scope")
 broid.event = require("broid.event")
+broid.getValue = require("broid.getValue")
+broid.isState = require("broid.isState")
 
 -- Draw callback
 function broid.draw()
