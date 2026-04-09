@@ -1,14 +1,14 @@
 -- Author: iGottic
 
-local Destroyed = {}
+local destroyed = {}
 
 -- Imports
 local Symbol = require("broid.modules.symbol")
 
 -- Variables
-local ClassSymbol = Symbol.new("Destroyed")
+local ClassSymbol = Symbol.new("destroyed")
 
-function Destroyed:__index(Index)
+function destroyed:__index(Index)
     if Index == "__SEAM_INDEX" then
         return ClassSymbol
     elseif Index == "__SEAM_CAN_BE_SCOPED" then
@@ -18,6 +18,4 @@ function Destroyed:__index(Index)
     end
 end
 
-local Meta = setmetatable({}, Destroyed)
-
-return Meta
+return setmetatable({}, destroyed)

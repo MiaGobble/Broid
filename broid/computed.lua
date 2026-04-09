@@ -1,94 +1,92 @@
 -- Author: iGottic
 
-local Computed = {}
+local computed = {}
 
 -- Imports
 local modules = "broid.modules"
 local bucket = require(modules .. ".bucket")
-local Signal = require(modules .. ".signal")
-local Symbol = require(modules .. ".symbol")
-local GetValue = require("broid.getValue")
-local IsState = require("broid.isState")
+local signal = require(modules .. ".signal")
+local symbol = require(modules .. ".symbol")
+local getValue = require("broid.getValue")
+local isState = require("broid.isState")
 
 -- Variables
-local ClassSymbol = Symbol.new("Computed")
+local classSymbol = symbol.new("computed")
 
-function Computed:__call(Callback)
+function computed:__call(callback)
     -- This shit has caused me so much pain
-    local TroveInstance = bucket.new()
-    local ChangedSignal = Signal.new()
-    local UsedValues = {}
-    local CurrentValue = nil
-    local IsInitialized = false
-    local AttachedSignal = Signal.new()
-    local InstanceSymbol = Symbol.new("ComputedInstance")
+    local bucketInstance = bucket.new()
+    local changedSignal = signal.new()
+    local usedValues = {}
+    local currentValue = nil
+    local isInitialized = false
+    local attachedSignal = signal.new()
+    local instanceSymbol = symbol.new("computedInstance")
 
-    local function Use(ThisValue)
-        -- Is Use connecting to a state? If not, just get the value
+    local function use(thisValue)
+        -- Is use connecting to a state? If not, just get the value
 
-        if ThisValue ~= nil and IsState(ThisValue) then
-            if UsedValues[ThisValue] ~= nil then
-                return GetValue(UsedValues[ThisValue])
+        if thisValue ~= nil and isState(thisValue) then
+            if usedValues[thisValue] ~= nil then
+                return getValue(usedValues[thisValue])
             end
 
-            UsedValues[ThisValue] = ThisValue
+            usedValues[thisValue] = thisValue
 
-            TroveInstance:Add(ThisValue.Changed:Connect(function()
-                CurrentValue = Callback(Use)
-                ChangedSignal:Fire("Value", CurrentValue) -- When the state changes, fire the changed signal for computed
+            bucketInstance:Add(thisValue.changed:Connect(function()
+                currentValue = callback(use)
+                changedSignal:Fire("value", currentValue) -- When the state changes, fire the changed signal for computed
             end))
         end
 
-        return GetValue(ThisValue)
+        return getValue(thisValue)
     end
 
-    local ActiveComputation; ActiveComputation = setmetatable({
+    local activeComputation; activeComputation = setmetatable({
         Destroy = function()
-            TroveInstance:Destroy()
+            bucketInstance:Destroy()
         end,
     }, {
-        __index = function(_, Index)
-            if Index == "__SEAM_OBJECT" then
-                return InstanceSymbol
-            elseif Index == "Value" then
+        __index = function(_, index)
+            if index == "__SEAM_OBJECT" then
+                return instanceSymbol
+            elseif index == "value" then
                 -- Same as above, let's not re-calculate
 
-                if not IsInitialized then
-                    CurrentValue = Callback(Use)
-                    IsInitialized = true
+                if not isInitialized then
+                    currentValue = callback(use)
+                    isInitialized = true
                 end
 
-                return CurrentValue
-            elseif Index == "Changed" then
-                -- We need to connect the Use() functions here to track changes
+                return currentValue
+            elseif index == "changed" then
+                -- We need to connect the use() functions here to track changes
 
-                if not IsInitialized then
-                    CurrentValue = Callback(Use)
-                    IsInitialized = true
+                if not isInitialized then
+                    currentValue = callback(use)
+                    isInitialized = true
                 end
 
-                return ChangedSignal
-            elseif Index == "AttachedToInstance" then
-                return AttachedSignal
+                return changedSignal
+            elseif index == "attachedToInstance" then
+                return attachedSignal
             end
 
             return nil
         end
     })
 
-    return ActiveComputation
+    return activeComputation
 end
 
-function Computed:__index(Key)
-    if Key == "__SEAM_INDEX" then
-        return ClassSymbol
-    elseif Key == "__SEAM_CAN_BE_SCOPED" then
+function computed:__index(key)
+    if key == "__SEAM_INDEX" then
+        return classSymbol
+    elseif key == "__SEAM_CAN_BE_SCOPED" then
         return true
     else
         return nil
     end
 end
 
-local Meta = setmetatable({}, Computed)
-
-return Meta
+return setmetatable({}, computed)

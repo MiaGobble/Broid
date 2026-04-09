@@ -1,33 +1,33 @@
 -- Author: iGottic
 
-local GetValue = {}
+local getValue = {}
 
 -- Imports
-local IsState = require("broid.isState")
+local isState = require("broid.isState")
 
-function GetValue:__call(State)
+function getValue:__call(state)
     -- Nothing exists? No problem.
-    if State == nil then
+    if state == nil then
         return nil
     end
 
     -- Is it a state? Return the value of that state.
-    if IsState(State) then
-        return State.Value
+    if isState(state) then
+        return state.value
     end
 
     -- Just normal userdata? That's cool too.
-    return State
+    return state
 end
 
-function GetValue:__index(Key)
-    if Key == "__SEAM_CAN_BE_SCOPED" then
+function getValue:__index(key)
+    if key == "__SEAM_CAN_BE_SCOPED" then
         return false
     end
 
     return nil
 end
 
-local Meta = setmetatable({}, GetValue)
+local Meta = setmetatable({}, getValue)
 
 return Meta

@@ -7,213 +7,211 @@ local EPSILON = 0.001
 
 -- Imports
 local modules = "broid.modules"
-local GetValue = require("broid.getValue")
+local getValue = require("broid.getValue")
 local drawCache = require("broid.drawCache")
-local ValuePacker = require(modules .. ".valuePacker")
-local Signal = require(modules .. ".signal")
-local IsValueChanged = require(modules .. ".isValueChanged")
-local Symbol = require(modules .. ".symbol")
+local valuePacker = require(modules .. ".valuePacker")
+local signal = require(modules .. ".signal")
+local isValueChanged = require(modules .. ".isValueChanged")
+local symbol = require(modules .. ".symbol")
 
 -- Variables
-local ClassSymbol = Symbol.new("Spring")
+local classSymbol = symbol.new("spring")
 
-local function GetPositionAndVelocity(OldPosition, OldVelocity, Target, Dampening, Speed, TimeStarted)
-    local TimePassed = os.clock() - TimeStarted
-    local TimeValue = TimePassed * Speed
-    local DampeningSquared = Dampening ^ 2
-    local HighSpeedTime = nil
-    local Cosine = nil
-    local Sine = nil
+local function getPositionAndVelocity(oldPosition, oldVelocity, target, dampening, speed, timeStarted)
+    local timePassed = os.clock() - timeStarted
+    local timeValue = timePassed * speed
+    local dampeningSquared = dampening ^ 2
+    local highSpeedTime = nil
+    local cosine = nil
+    local sine = nil
 
-    if DampeningSquared < 1 then
+    if dampeningSquared < 1 then
         -- Under dampened
 
-        HighSpeedTime = (1 - DampeningSquared) ^ 0.5
+        highSpeedTime = (1 - dampeningSquared) ^ 0.5
 
-        local EulersFastTime = math.exp(-Dampening * TimeValue) / HighSpeedTime
-        Cosine = EulersFastTime * math.cos(HighSpeedTime * TimeValue)
-        Sine = EulersFastTime * math.sin(HighSpeedTime * TimeValue)
-    elseif DampeningSquared == 1 then
+        local eulersFastTime = math.exp(-dampening * timeValue) / highSpeedTime
+        cosine = eulersFastTime * math.cos(highSpeedTime * timeValue)
+        sine = eulersFastTime * math.sin(highSpeedTime * timeValue)
+    elseif dampeningSquared == 1 then
         -- Critically dampened
 
-        HighSpeedTime = 1
+        highSpeedTime = 1
 
-        local EulersFastTime = math.exp(-Dampening * TimeValue)
-        Cosine = EulersFastTime
-        Sine = EulersFastTime * TimeValue
+        local eulersFastTime = math.exp(-dampening * timeValue)
+        cosine = eulersFastTime
+        sine = eulersFastTime * timeValue
     else
         -- Over dampened
 
-        HighSpeedTime = (DampeningSquared - 1) ^ 0.5
-        Cosine = math.exp((-Dampening + HighSpeedTime) * TimeValue) / (2 * HighSpeedTime) + math.exp((-Dampening - HighSpeedTime) * TimeValue) / (2 * HighSpeedTime)
-        Sine = math.exp((-Dampening + HighSpeedTime) * TimeValue) / (2 * HighSpeedTime) - math.exp((-Dampening - HighSpeedTime) * TimeValue) / (2 * HighSpeedTime)
+        highSpeedTime = (dampeningSquared - 1) ^ 0.5
+        cosine = math.exp((-dampening + highSpeedTime) * timeValue) / (2 * highSpeedTime) + math.exp((-dampening - highSpeedTime) * timeValue) / (2 * highSpeedTime)
+        sine = math.exp((-dampening + highSpeedTime) * timeValue) / (2 * highSpeedTime) - math.exp((-dampening - highSpeedTime) * timeValue) / (2 * highSpeedTime)
     end
 
-    local Value0 = {
-        HighSpeedTime * Cosine + Dampening * Sine,
-        1 - (HighSpeedTime * Cosine + Dampening * Sine),
-        Sine / Speed,
+    local value0 = {
+        highSpeedTime * cosine + dampening * sine,
+        1 - (highSpeedTime * cosine + dampening * sine),
+        sine / speed,
     }
 
-    local Value1 = {
-        -Speed * Sine,
-        Speed * Sine,
-        HighSpeedTime * Cosine - Dampening * Sine,
+    local value1 = {
+        -speed * sine,
+        speed * sine,
+        highSpeedTime * cosine - dampening * sine,
     }
 
-    local Position = Value0[1] * OldPosition + Value0[2] * Target + Value0[3] * OldVelocity
-    local Velocity = Value1[1] * OldPosition + Value1[2] * Target + Value1[3] * OldVelocity
+    local position = value0[1] * oldPosition + value0[2] * target + value0[3] * oldVelocity
+    local velocity = value1[1] * oldPosition + value1[2] * target + value1[3] * oldVelocity
 
-    return Position, Velocity
+    return position, velocity
 end
 
-local function ConvertValueToUnpackedSprings(Value)
-    local ValueType = type(Value)
-    local UnpackedValue = ValuePacker.UnpackValue(Value, ValueType)
+local function convertValueToUnpackedSprings(value)
+    local valueType = type(value)
+    local unpackedValue = valuePacker.UnpackValue(value, valueType)
 
-    for Index, Element in pairs(UnpackedValue) do
-        UnpackedValue[Index] = {
-            StartingPosition = Element,
-            Velocity = 0,
-            StartingTime = os.clock(),
-            Target = Element,
+    for index, element in pairs(unpackedValue) do
+        unpackedValue[index] = {
+            startingPosition = element,
+            velocity = 0,
+            startingTime = os.clock(),
+            target = element,
         }
     end
 
-    return UnpackedValue
+    return unpackedValue
 end
 
-function Spring:__call(Value, Speed, Dampening)
-    local CurrentTarget = GetValue(Value)
-    local ValueType = type(CurrentTarget)
-    local UnpackedSprings = ConvertValueToUnpackedSprings(CurrentTarget)
-    local AttachedSignal = Signal.new()
-    local ChangedSignal = Signal.new()
-    local CurrentValue = CurrentTarget
-    local LastValue = CurrentTarget
-    local InstanceSymbol = Symbol.new("Spring")
+function Spring:__call(value, speed, dampening)
+    local currentTarget = getValue(value)
+    local valueType = type(currentTarget)
+    local unpackedSprings = convertValueToUnpackedSprings(currentTarget)
+    local attachedSignal = signal.new()
+    local changedSignal = signal.new()
+    local currentValue = currentTarget
+    local lastValue = currentTarget
+    local instanceSymbol = symbol.new("spring")
 
-    local ActiveValue
+    local activeValue
 
     local function updateFunction()
-        local PackedValues = {}
+        local packedValues = {}
 
-        if type(Value) == "table" and Value.__SEAM_OBJECT then
-            ActiveValue.Target = GetValue(Value)
+        if type(value) == "table" and value.__SEAM_OBJECT then
+            activeValue.target = getValue(value)
         end
 
-        for Index, Spring in pairs(UnpackedSprings) do
-            local Position, _ = GetPositionAndVelocity(Spring.StartingPosition, Spring.Velocity, Spring.Target, GetValue(Dampening), GetValue(Speed), Spring.StartingTime)
+        for index, spring in pairs(unpackedSprings) do
+            local position, _ = getPositionAndVelocity(spring.startingPosition, spring.velocity, spring.target, getValue(dampening), getValue(speed), spring.startingTime)
 
-			if math.abs(Position) <= EPSILON then
-				Position = 0
-			elseif math.abs(Position - Spring.Target) <= EPSILON then
-				Position = Spring.Target
-			end
+            if math.abs(position) <= EPSILON then
+                position = 0
+            elseif math.abs(position - spring.target) <= EPSILON then
+                position = spring.target
+            end
 
-            PackedValues[Index] = Position
+            packedValues[index] = position
         end
 
-        CurrentValue = ValuePacker.PackValue(PackedValues, ValueType)
+        currentValue = valuePacker.PackValue(packedValues, valueType)
 
-        if IsValueChanged(LastValue, CurrentValue) then
-            ChangedSignal:Fire("Value")
+        if isValueChanged(lastValue, currentValue) then
+            changedSignal:Fire("value")
         end
 
-        LastValue = CurrentValue
+        lastValue = currentValue
     end
 
     drawCache.add(updateFunction)
 
-    ActiveValue = setmetatable({
+    activeValue = setmetatable({
         Destroy = function()
-            UnpackedSprings = nil
+            unpackedSprings = nil
             drawCache.remove(updateFunction)
         end
     }, {
-        __index = function(_, Index)
-            if Index == "__SEAM_OBJECT" then
-                return InstanceSymbol
-            elseif Index == "Value" then
-                return CurrentValue
-            elseif Index == "Velocity" then
-                local PackedValues = {}
+        __index = function(_, index)
+            if index == "__SEAM_OBJECT" then
+                return instanceSymbol
+            elseif index == "value" then
+                return currentValue
+            elseif index == "velocity" then
+                local packedValues = {}
 
-                for ThisIndex, ThisSpring in pairs(UnpackedSprings) do
-                    local _, Velocity = GetPositionAndVelocity(ThisSpring.StartingPosition, ThisSpring.Velocity, ThisSpring.Target, GetValue(Dampening), GetValue(Speed), ThisSpring.StartingTime)
+                for thisIndex, thisSpring in pairs(unpackedSprings) do
+                    local _, velocity = getPositionAndVelocity(thisSpring.startingPosition, thisSpring.velocity, thisSpring.target, getValue(dampening), getValue(speed), thisSpring.startingTime)
 
-                    PackedValues[ThisIndex] = Velocity
+                    packedValues[thisIndex] = velocity
                 end
 
-                return ValuePacker.PackValue(PackedValues, ValueType)
-            elseif Index == "Changed" then
-                return ChangedSignal
-            elseif Index == "AttachedToInstance" then
-                return AttachedSignal
-            elseif Index == "Speed" then
-                return Speed
-            elseif Index == "Dampening" then
-                return Dampening
+                return valuePacker.PackValue(packedValues, valueType)
+            elseif index == "changed" then
+                return changedSignal
+            elseif index == "attachedToInstance" then
+                return attachedSignal
+            elseif index == "speed" then
+                return speed
+            elseif index == "dampening" then
+                return dampening
             end
 
             return nil
         end,
 
-        __newindex = function(_, Index, NewValue)
-            if Index == "Target" then
-                CurrentTarget = GetValue(NewValue)
+        __newindex = function(_, index, newValue)
+            if index == "target" then
+                currentTarget = getValue(newValue)
 
-                local UnpackedNewValue = ValuePacker.UnpackValue(CurrentTarget, ValueType)
+                local unpackedNewValue = valuePacker.UnpackValue(currentTarget, valueType)
 
-                for ThisIndex, ThisSpring in pairs(UnpackedSprings) do
-                    local Position, Velocity = GetPositionAndVelocity(ThisSpring.StartingPosition, ThisSpring.Velocity, ThisSpring.Target, GetValue(Dampening), GetValue(Speed), ThisSpring.StartingTime)
+                for thisIndex, thisSpring in pairs(unpackedSprings) do
+                    local position, velocity = getPositionAndVelocity(thisSpring.startingPosition, thisSpring.velocity, thisSpring.target, getValue(dampening), getValue(speed), thisSpring.startingTime)
 
-                    ThisSpring.StartingPosition = Position
-                    ThisSpring.Velocity = Velocity
-                    ThisSpring.StartingTime = os.clock()
-                    ThisSpring.Target = UnpackedNewValue[ThisIndex]
+                    thisSpring.startingPosition = position
+                    thisSpring.velocity = velocity
+                    thisSpring.startingTime = os.clock()
+                    thisSpring.target = unpackedNewValue[thisIndex]
                 end
-            elseif Index == "Value" then
-                local UnpackedNewValue = ValuePacker.UnpackValue(NewValue, ValueType)
+            elseif index == "value" then
+                local unpackedNewValue = valuePacker.UnpackValue(newValue, valueType)
 
-                for ThisIndex, ThisSpring in pairs(UnpackedSprings) do
-                    local _, Velocity = GetPositionAndVelocity(ThisSpring.StartingPosition, ThisSpring.Velocity, ThisSpring.Target, GetValue(Dampening), GetValue(Speed), ThisSpring.StartingTime)
+                for thisIndex, thisSpring in pairs(unpackedSprings) do
+                    local _, velocity = getPositionAndVelocity(thisSpring.startingPosition, thisSpring.velocity, thisSpring.target, getValue(dampening), getValue(speed), thisSpring.startingTime)
 
-                    ThisSpring.StartingPosition = UnpackedNewValue[ThisIndex]
-                    ThisSpring.Velocity = Velocity
-                    ThisSpring.StartingTime = os.clock()
+                    thisSpring.startingPosition = unpackedNewValue[thisIndex]
+                    thisSpring.velocity = velocity
+                    thisSpring.startingTime = os.clock()
                 end
-            elseif Index == "Dampening" then
-                Dampening = NewValue
-            elseif Index == "Speed" then
-                Speed = NewValue
-            elseif Index == "Velocity" then
-                local UnpackedNewValue = ValuePacker.UnpackValue(NewValue, ValueType)
+            elseif index == "dampening" then
+                dampening = newValue
+            elseif index == "speed" then
+                speed = newValue
+            elseif index == "velocity" then
+                local unpackedNewValue = valuePacker.UnpackValue(newValue, valueType)
 
-                for ThisIndex, ThisSpring in pairs(UnpackedSprings) do
-                    local Position, _ = GetPositionAndVelocity(ThisSpring.StartingPosition, ThisSpring.Velocity, ThisSpring.Target, GetValue(Dampening), GetValue(Speed), ThisSpring.StartingTime)
+                for thisIndex, thisSpring in pairs(unpackedSprings) do
+                    local position, _ = getPositionAndVelocity(thisSpring.startingPosition, thisSpring.velocity, thisSpring.target, getValue(dampening), getValue(speed), thisSpring.startingTime)
 
-                    ThisSpring.Velocity = UnpackedNewValue[ThisIndex]
-                    ThisSpring.StartingPosition = Position
-                    ThisSpring.StartingTime = os.clock()
+                    thisSpring.velocity = unpackedNewValue[thisIndex]
+                    thisSpring.startingPosition = position
+                    thisSpring.startingTime = os.clock()
                 end
             end
         end,
     })
 
-    return ActiveValue
+    return activeValue
 end
 
-function Spring:__index(Index)
-    if Index == "__SEAM_OBJECT" then
-        return ClassSymbol
-    elseif Index == "__SEAM_CAN_BE_SCOPED" then
+function Spring:__index(index)
+    if index == "__SEAM_OBJECT" then
+        return classSymbol
+    elseif index == "__SEAM_CAN_BE_SCOPED" then
         return true
     else
         return nil
     end
 end
 
-local Meta = setmetatable({}, Spring)
-
-return Meta
+return setmetatable({}, Spring)

@@ -1,77 +1,70 @@
 -- Author: iGottic
-
-local Value = {}
+local value = {}
 
 -- Imports
 local modules = "broid.modules"
 local bucket = require(modules .. ".bucket")
-local Signal = require(modules .. ".signal")
-local IsValueChanged = require(modules .. ".isValueChanged")
-local Symbol = require(modules .. ".symbol")
+local signal = require(modules .. ".signal")
+local isValueChanged = require(modules .. ".isValueChanged")
+local symbol = require(modules .. ".symbol")
 
 -- Variables
-local ClassSymbol = Symbol.new("Value")
+local classSymbol = symbol.new("value")
 
-function Value:__call(ThisValue)
+function value:__call(initialValue)
     local bucketInstance = bucket.new()
-    local ChangedSignal = Signal.new()
-    local AttachedSignal = Signal.new()
-    local InstanceSymbol = Symbol.new("Value")
-    local IsLocked = false
-    local ValueType = ThisValue ~= nil and type(ThisValue) or nil
+    local changedSignal = signal.new()
+    local attachedSignal = signal.new()
+    local instanceSymbol = symbol.new("value")
+    local isLocked = false
+    local valueType = initialValue ~= nil and type(initialValue) or nil
 
-    --[[
-        local This = Value(...)
-        This.Value = x OR x = This.Value
-        This.Changed -> As rbxscriptsignal
-    --]]
-
-    local ActiveValue; ActiveValue = setmetatable({
+    local activeValue; activeValue = setmetatable({
         Destroy = function()
             bucketInstance:Destroy()
         end
     }, {
-        __index = function(_, Index)
-            if Index == "__SEAM_OBJECT" then
-                return InstanceSymbol
-            elseif Index == "Value" then
-                return ThisValue
-            elseif Index == "Changed" then
-                return ChangedSignal
-            elseif Index == "AttachedToInstance" then
-                return AttachedSignal
+        __index = function(_, index)
+            if index == "__SEAM_OBJECT" then
+                return instanceSymbol
+            elseif index == "value" then
+                return initialValue
+            elseif index == "changed" then
+                return changedSignal
+            elseif index == "attachedToInstance" then
+                return attachedSignal
             end
 
             return nil
         end,
 
-        __newindex = function(_, Index, NewValue)
-            if Index == "Value" then
-                if IsLocked then
+        __newindex = function(_, index, newValue)
+            if index == "value" then
+                if isLocked then
                     error("Attempt to modify value when locked.")
                 end
 
-                if ValueType ~= nil then
-                    if NewValue ~= nil and type(NewValue) ~= ValueType then
-                        error("Invalid value type! Expected " .. ValueType .. ", got " .. type(NewValue))
+                if valueType ~= nil then
+                    if newValue ~= nil and type(newValue) ~= valueType then
+                        error("Invalid value type! Expected " .. valueType .. ", got " .. type(newValue))
                     end
-                elseif NewValue ~= nil then
-                    ValueType = type(NewValue)
+                elseif newValue ~= nil then
+                    valueType = type(newValue)
                 end
 
-                if not IsValueChanged(ThisValue, NewValue) then
+                if not isValueChanged(initialValue, newValue) then
                     return
                 end
 
-                ThisValue = NewValue
+                initialValue = newValue
 
                 -- Make sure to fire the changed signal for other states
-                ChangedSignal:Fire("Value", ThisValue)
+                changedSignal:Fire("value", initialValue)
                 return
-            elseif Index == "__LOCKED" then
-                if NewValue == true then
-                    IsLocked = true
-                    ActiveValue:Destroy()
+            elseif index == "__locked" then
+                if newValue == true then
+                    isLocked = true
+                    activeValue:destroy()
                     return
                 else
                     error("Can not unlock values.")
@@ -82,19 +75,17 @@ function Value:__call(ThisValue)
         end,
     })
 
-    return ActiveValue
+    return activeValue
 end
 
-function Value:__index(Index)
-    if Index == "__SEAM_INDEX" then
-        return ClassSymbol
-    elseif Index == "__SEAM_CAN_BE_SCOPED" then
+function value:__index(index)
+    if index == "__SEAM_INDEX" then
+        return classSymbol
+    elseif index == "__SEAM_CAN_BE_SCOPED" then
         return true
     else
         return nil
     end
 end
 
-local Meta = setmetatable({}, Value)
-
-return Meta
+return setmetatable({}, value)

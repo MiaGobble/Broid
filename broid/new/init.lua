@@ -15,7 +15,7 @@ local elements = {
 }
 
 -- Variables
-local classSymbol = symbol.new("New")
+local classSymbol = symbol.new("new")
 
 local function deepCopy(original)
     if type(original) ~= "table" then
@@ -24,8 +24,8 @@ local function deepCopy(original)
 
     local copy = {}
     
-    for index, value in pairs(original) do
-        copy[index] = deepCopy(value)
+    for index, subValue in pairs(original) do
+        copy[index] = deepCopy(subValue)
     end
 
     return copy
@@ -51,7 +51,7 @@ function new:__call(elementType, properties, scope)
     local isActive = true
     local createTimestamp = os.clock()
     local drawFunction = module(properties)
-    local tags = properties[tags] or {}
+    local theseTags = properties[tags] or {}
     local isMouseInside = scope and scope:value(false) or value(false)
     local isMouseDown = {
         scope and scope:value(false) or value(false),
@@ -67,22 +67,22 @@ function new:__call(elementType, properties, scope)
 
         if getValue(properties.visible) == false then
             for _, mouseDownValue in ipairs(isMouseDown) do
-                mouseDownValue.Value = false
+                mouseDownValue.value = false
             end
 
-            isMouseInside.Value = false
+            isMouseInside.value = false
 
             return
         end
 
         if properties.IsMouseInBounds then
-            isMouseInside.Value = properties:IsMouseInBounds()
+            isMouseInside.value = properties:IsMouseInBounds()
 
             for mouseIndex, mouseDownValue in ipairs(isMouseDown) do
-                if isMouseInside.Value and love.mouse.isDown(mouseIndex) then
-                    mouseDownValue.Value = true
+                if isMouseInside.value and love.mouse.isDown(mouseIndex) then
+                    mouseDownValue.value = true
                 else
-                    mouseDownValue.Value = false
+                    mouseDownValue.value = false
                 end
             end
         end
@@ -92,8 +92,8 @@ function new:__call(elementType, properties, scope)
 
     drawCache.add(updateFunction)
 
-    isMouseInside.Changed:Connect(function()
-        if isMouseInside.Value then
+    isMouseInside.changed:Connect(function()
+        if isMouseInside.value then
             if properties[event.mouseEnter] then
                 coroutine.wrap(properties[event.mouseEnter])()
             end
@@ -105,8 +105,8 @@ function new:__call(elementType, properties, scope)
     end)
 
     for mouseIndex, mouseDownValue in ipairs(isMouseDown) do
-        mouseDownValue.Changed:Connect(function()
-            if mouseDownValue.Value then
+        mouseDownValue.changed:Connect(function()
+            if mouseDownValue.value then
                 if properties[event["mouseButton" .. mouseIndex .. "Down"]] then
                     coroutine.wrap(properties[event["mouseButton" .. mouseIndex .. "Down"]])()
                 end
@@ -137,7 +137,7 @@ function new:__call(elementType, properties, scope)
     end
 
     function properties:GetTags()
-        return getValue(tags)
+        return getValue(theseTags)
     end
 
     return getStrippedVersion(properties, {tags, destroyed})

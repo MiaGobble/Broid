@@ -5,12 +5,12 @@ local Scope = {}
 -- Imports
 local modules = "broid.modules"
 local bucket = require(modules .. ".bucket")
-local Symbol = require(modules .. ".symbol")
-local CreateDeepTraceback = require(modules .. ".createDeepTraceback")
+local symbol = require(modules .. ".symbol")
+local createDeepTraceback = require(modules .. ".createDeepTraceback")
 
 -- Variables
-local ClassSymbol = Symbol.new("Scope")
-local Meta = setmetatable({}, Scope)
+local classSymbol = symbol.new("Scope")
+local meta = setmetatable({}, Scope)
 
 local function deepCopy(original)
     if type(original) ~= "table" then
@@ -26,43 +26,43 @@ local function deepCopy(original)
     return copy
 end
 
-function Scope.__call(_, ScopedObjects)
+function Scope.__call(_, scopedObjects)
     -- Scopes have been a headache to get working, since I'm a dumdum
 
     local selfClass = {}
     local selfMeta = {}
-    local InstanceSymbol = Symbol.new("Scope")
+    local instanceSymbol = symbol.new("Scope")
 
-    if not ScopedObjects then
-        ScopedObjects = {}
+    if not scopedObjects then
+        scopedObjects = {}
     end
 
-    --ScopedObjects = deepCopy(ScopedObjects)
+    --scopedObjects = deepCopy(scopedObjects)
 
-    function selfMeta:__index(Key)
-        if not Key then
-            print("Attempt to index a scope with nil\n" .. CreateDeepTraceback())
+    function selfMeta:__index(key)
+        if not key then
+            print("Attempt to index a scope with nil\n" .. createDeepTraceback())
             return
         end
 
-        if Key == "__SEAM_OBJECT" then
+        if key == "__SEAM_OBJECT" then
             -- Some things check if something is a seam object, so
             -- this is the first thing we should try to return
-            return InstanceSymbol
+            return instanceSymbol
         end
 
-        local Object = ScopedObjects[Key]
+        local object = scopedObjects[key]
 
-        if Object == nil then
-            print("Attempt to index a scope with {Key} when it does not exist in scope\n" .. CreateDeepTraceback())
+        if object == nil then
+            print("Attempt to index a scope with " .. tostring(key) .. " when it does not exist in scope\n" .. createDeepTraceback())
             return nil
         end
     
-        if type(Object) ~= "function" and (type(Object) ~= "table" or not Object.__SEAM_CAN_BE_SCOPED) then
-            if Object.__SEAM_OBJECT or Object.__SEAM_INDEX then
+        if type(object) ~= "function" and (type(object) ~= "table" or not object.__SEAM_CAN_BE_SCOPED) then
+            if object.__SEAM_OBJECT or object.__SEAM_INDEX then
                 -- If something from seam has __SEAM_CAN_BE_SCOPED (meaning it can't be scoped) as false,
                 -- then we should error what specifically the user tried to use
-                error(tostring(Object.__SEAM_OBJECT or Object.__SEAM_INDEX) .. " is not a valid scopable Seam object")
+                error(tostring(object.__SEAM_OBJECT or object.__SEAM_INDEX) .. " is not a valid scopable Seam object")
             else
                 -- Idk just error
                 error("Object is not a valid scopable Seam object (unknown object)")
@@ -71,68 +71,68 @@ function Scope.__call(_, ScopedObjects)
     
         return function(_, ...)
             if not self.bucket then -- If the trove instance doesn't exist, the scope is likely destroyed
-                print("Attempted to use something in scope (" .. Key .. ") but scope is already destroyed:\n" .. CreateDeepTraceback())
+                print("Attempted to use something in scope (" .. key .. ") but scope is already destroyed:\n" .. createDeepTraceback())
                 return
             end
 
             -- Seam things are called as functions, so this is a wrapper
             -- function that puts any created instances into the trove
-            local Tuple = nil
+            local tuple = nil
 
-            if type(Object) == "function" then
+            if type(object) == "function" then
                 -- If it's a non-Seam function, let's pass the scope as the first parameter,
                 -- then pass in everything else
-                Tuple = {Object(self, ...)}
-            elseif Object.__SEAM_OBJECT and tostring(Object.__SEAM_OBJECT) == "New" then
+                tuple = {object(self, ...)}
+            elseif object.__SEAM_OBJECT and tostring(object.__SEAM_OBJECT) == "new" then
                 -- For New specifically, we want to actually put scope at the end. In the
                 -- future, if seam requires scopes, this will change
-                local Args = {...}
-                table.insert(Args, self)
-                Tuple = {Object(unpack(Args))}
+                local args = {...}
+                table.insert(args, self)
+                tuple = {object(unpack(args))}
             else
                 -- Right now, scope is not passed in to most seam objects
-                Tuple = {Object(...)}
+                tuple = {object(...)}
             end
     
             -- If nothing returns, don't bother running the rest of the code
-            if #Tuple == 0 then
+            if #tuple == 0 then
                 return
             end
 
             -- But yeah, let's add created things to the trove
-            for _, ThisValue in pairs(Tuple) do
-                self.bucket:Add(ThisValue)
+            for _, thisValue in pairs(tuple) do
+                self.bucket:Add(thisValue)
             end
     
             -- Unpack the tuple and return it ALLLLLLLL
-            return unpack(Tuple)
+            return unpack(tuple)
         end
     end
 
-    function selfClass:InnerScope(NewScopedObjects)
+    function selfClass:InnerScope(newScopedObjects)
         -- Default to a blank table
-        if NewScopedObjects == nil then
-            NewScopedObjects = {}
+        if newScopedObjects == nil then
+            newScopedObjects = {}
         end
 
         -- Take the current scoped objects and copy them to the new table
-        for Index, Object in pairs(self.ScopedObjects) do
-            NewScopedObjects[Index] = Object
+        for index, object in pairs(self.scopedObjects) do
+            newScopedObjects[index] = object
         end
 
-        local NewScope = Meta(NewScopedObjects) -- Make a new scope
-        self.bucket:Add(NewScope) -- Add the new sub-scope to the parent trove
+        local newScope = meta(newScopedObjects) -- Make a new scope
+        self.bucket:Add(newScope) -- Add the new sub-scope to the parent trove
 
-        return NewScope
+        return newScope
     end
 
-    function selfClass:AddObject(Object)
-        self.bucket:Add(Object)
+    function selfClass:AddObject(object)
+        self.bucket:Add(object)
     end
 
-    function selfClass:RemoveObject(Object)
-        Object:Destroy()
-        self.bucket[Object] = nil
+    function selfClass:RemoveObject(object)
+        object:Destroy()
+        self.bucket[object] = nil
     end
 
     function selfClass:Destroy()
@@ -140,21 +140,21 @@ function Scope.__call(_, ScopedObjects)
         self.bucket = nil
     end
 
-    local ScopeInstance = setmetatable(selfClass, selfMeta)
-    ScopeInstance.ScopedObjects = ScopedObjects
-    ScopeInstance.bucket = bucket.new()
+    local scopeInstance = setmetatable(selfClass, selfMeta)
+    scopeInstance.scopedObjects = scopedObjects
+    scopeInstance.bucket = bucket.new()
 
-    return ScopeInstance
+    return scopeInstance
 end
 
-function Scope:__index(Key)
-    if Key == "__SEAM_OBJECT" then
-        return ClassSymbol
-    elseif Key == "__SEAM_CAN_BE_SCOPED" then
+function Scope:__index(key)
+    if key == "__SEAM_OBJECT" then
+        return classSymbol
+    elseif key == "__SEAM_CAN_BE_SCOPED" then
         return true
     else
         return nil
     end
 end
 
-return Meta
+return meta

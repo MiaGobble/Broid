@@ -58,7 +58,7 @@ function love.load()
     })
 
     timer.after(2, function()
-        isMoved.Value = true
+        isMoved.value = true
     end)
 end
 

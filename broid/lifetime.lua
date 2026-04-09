@@ -1,16 +1,16 @@
 -- Author: iGottic
 
-local Lifetime = {}
+local lifetime = {}
 
 -- Imports
-local Symbol = require("broid.modules.symbol")
+local symbol = require("broid.modules.symbol")
 
 -- Variables
-local ClassSymbol = Symbol.new("Lifetime")
+local classSymbol = symbol.new("lifetime")
 
-function Lifetime:__index(Index)
+function lifetime:__index(Index)
     if Index == "__SEAM_INDEX" then
-        return ClassSymbol
+        return classSymbol
     elseif Index == "__SEAM_CAN_BE_SCOPED" then
         return false
     else
@@ -18,6 +18,6 @@ function Lifetime:__index(Index)
     end
 end
 
-local Meta = setmetatable({}, Lifetime)
+local Meta = setmetatable({}, lifetime)
 
 return Meta
