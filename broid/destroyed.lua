@@ -9,9 +9,9 @@ local Symbol = require("broid.modules.symbol")
 local ClassSymbol = Symbol.new("destroyed")
 
 function destroyed:__index(Index)
-    if Index == "__SEAM_INDEX" then
+    if Index == "__BROID_INDEX" then
         return ClassSymbol
-    elseif Index == "__SEAM_CAN_BE_SCOPED" then
+    elseif Index == "__BROID_CAN_BE_SCOPED" then
         return false
     else
         return nil

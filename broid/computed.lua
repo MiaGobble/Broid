@@ -48,7 +48,7 @@ function computed:__call(callback)
         end,
     }, {
         __index = function(_, index)
-            if index == "__SEAM_OBJECT" then
+            if index == "__BROID_OBJECT" then
                 return instanceSymbol
             elseif index == "value" then
                 -- Same as above, let's not re-calculate
@@ -80,9 +80,9 @@ function computed:__call(callback)
 end
 
 function computed:__index(key)
-    if key == "__SEAM_INDEX" then
+    if key == "__BROID_INDEX" then
         return classSymbol
-    elseif key == "__SEAM_CAN_BE_SCOPED" then
+    elseif key == "__BROID_CAN_BE_SCOPED" then
         return true
     else
         return nil

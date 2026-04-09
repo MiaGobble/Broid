@@ -9,8 +9,13 @@
 
 -- Imports
 local getValue = require("broid.getValue")
+local color3 = require("broid.color3")
 
 return function(properties)
+    if not properties.color then
+        properties.color = color3.new(1, 1, 1)
+    end
+
     function properties:IsMouseInBounds()
         local mouseX, mouseY = love.mouse.getPosition()
         local dx = mouseX - getValue(properties.x)
@@ -20,6 +25,7 @@ return function(properties)
     end
 
     return function()
+        love.graphics.setColor(unpack(getValue(properties.color)))
         love.graphics.circle(getValue(properties.drawMode), getValue(properties.x), getValue(properties.y), getValue(properties.radius), getValue(properties.segments))
     end
 end

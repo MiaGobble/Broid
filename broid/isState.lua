@@ -10,12 +10,12 @@ function isState:__call(checkedValue)
         return false -- Not a state since it's not a table
     end
 
-    if not checkedValue.__SEAM_OBJECT then
-        return false -- Not a state since it's not from Seam or not a Seam object
+    if not checkedValue.__BROID_OBJECT then
+        return false -- Not a state since it's not from Broid or not a Broid object
     end
 
     for _, value in pairs(RECOGNIZED_STATE_SYMBOLS) do
-        if value == tostring(checkedValue.__SEAM_OBJECT) then
+        if value == tostring(checkedValue.__BROID_OBJECT) then
             return true
         end
     end
@@ -24,7 +24,7 @@ function isState:__call(checkedValue)
 end
 
 function isState:__index(key)
-    if key == "__SEAM_CAN_BE_SCOPED" then
+    if key == "__BROID_CAN_BE_SCOPED" then
         return false
     end
 

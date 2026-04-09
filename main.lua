@@ -11,9 +11,7 @@ local timer = require("timer")
 local enum = broid.enum
 local lifetime = broid.lifetime
 local event = broid.event
-
--- Variables
-local object
+local color3 = broid.color3
 
 function love.load()
     local scope = broid.scope(broid)
@@ -39,6 +37,14 @@ function love.load()
                 return 200
             end
         end), 15, 0.5),
+
+        color = scope:spring(scope:computed(function(use)
+            if use(isMoved) then
+                return color3.new(1, 0, 0)
+            else
+                return color3.new(0, 1, 0)
+            end
+        end), 10, 1),
        
         [event.mouseEnter] = function()
             print("Mouse entered!")
@@ -57,7 +63,7 @@ function love.load()
         end,
     })
 
-    timer.after(2, function()
+    timer.after(3, function()
         isMoved.value = true
     end)
 end

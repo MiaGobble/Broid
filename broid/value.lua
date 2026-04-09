@@ -25,7 +25,7 @@ function value:__call(initialValue)
         end
     }, {
         __index = function(_, index)
-            if index == "__SEAM_OBJECT" then
+            if index == "__BROID_OBJECT" then
                 return instanceSymbol
             elseif index == "value" then
                 return initialValue
@@ -79,9 +79,9 @@ function value:__call(initialValue)
 end
 
 function value:__index(index)
-    if index == "__SEAM_INDEX" then
+    if index == "__BROID_INDEX" then
         return classSymbol
-    elseif index == "__SEAM_CAN_BE_SCOPED" then
+    elseif index == "__BROID_CAN_BE_SCOPED" then
         return true
     else
         return nil

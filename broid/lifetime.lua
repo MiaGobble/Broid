@@ -9,9 +9,9 @@ local symbol = require("broid.modules.symbol")
 local classSymbol = symbol.new("lifetime")
 
 function lifetime:__index(Index)
-    if Index == "__SEAM_INDEX" then
+    if Index == "__BROID_INDEX" then
         return classSymbol
-    elseif Index == "__SEAM_CAN_BE_SCOPED" then
+    elseif Index == "__BROID_CAN_BE_SCOPED" then
         return false
     else
         return nil

@@ -144,9 +144,9 @@ function new:__call(elementType, properties, scope)
 end
 
 function new:__index(index)
-    if index == "__SEAM_INDEX" then
+    if index == "__BROID_INDEX" then
         return classSymbol
-    elseif index == "__SEAM_CAN_BE_SCOPED" then
+    elseif index == "__BROID_CAN_BE_SCOPED" then
         return true
     else
         return nil

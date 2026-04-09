@@ -67,8 +67,7 @@ local function getPositionAndVelocity(oldPosition, oldVelocity, target, dampenin
     return position, velocity
 end
 
-local function convertValueToUnpackedSprings(value)
-    local valueType = type(value)
+local function convertValueToUnpackedSprings(value, valueType)
     local unpackedValue = valuePacker.UnpackValue(value, valueType)
 
     for index, element in pairs(unpackedValue) do
@@ -86,7 +85,12 @@ end
 function Spring:__call(value, speed, dampening)
     local currentTarget = getValue(value)
     local valueType = type(currentTarget)
-    local unpackedSprings = convertValueToUnpackedSprings(currentTarget)
+
+    if valueType == "table" and currentTarget.__TYPE then
+        valueType = currentTarget.__TYPE
+    end
+
+    local unpackedSprings = convertValueToUnpackedSprings(currentTarget, valueType)
     local attachedSignal = signal.new()
     local changedSignal = signal.new()
     local currentValue = currentTarget
@@ -95,10 +99,12 @@ function Spring:__call(value, speed, dampening)
 
     local activeValue
 
+    
+
     local function updateFunction()
         local packedValues = {}
 
-        if type(value) == "table" and value.__SEAM_OBJECT then
+        if type(value) == "table" and value.__BROID_OBJECT then
             activeValue.target = getValue(value)
         end
 
@@ -132,7 +138,7 @@ function Spring:__call(value, speed, dampening)
         end
     }, {
         __index = function(_, index)
-            if index == "__SEAM_OBJECT" then
+            if index == "__BROID_OBJECT" then
                 return instanceSymbol
             elseif index == "value" then
                 return currentValue
@@ -205,9 +211,9 @@ function Spring:__call(value, speed, dampening)
 end
 
 function Spring:__index(index)
-    if index == "__SEAM_OBJECT" then
+    if index == "__BROID_OBJECT" then
         return classSymbol
-    elseif index == "__SEAM_CAN_BE_SCOPED" then
+    elseif index == "__BROID_CAN_BE_SCOPED" then
         return true
     else
         return nil

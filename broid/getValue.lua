@@ -21,7 +21,7 @@ function getValue:__call(state)
 end
 
 function getValue:__index(key)
-    if key == "__SEAM_CAN_BE_SCOPED" then
+    if key == "__BROID_CAN_BE_SCOPED" then
         return false
     end
 

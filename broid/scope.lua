@@ -27,8 +27,8 @@ function scope.__call(_, scopedObjects)
             return
         end
 
-        if key == "__SEAM_OBJECT" then
-            -- Some things check if something is a seam object, so
+        if key == "__BROID_OBJECT" then
+            -- Some things check if something is a Broid object, so
             -- this is the first thing we should try to return
             return instanceSymbol
         end
@@ -40,14 +40,14 @@ function scope.__call(_, scopedObjects)
             return nil
         end
     
-        if type(object) ~= "function" and (type(object) ~= "table" or not object.__SEAM_CAN_BE_SCOPED) then
-            if object.__SEAM_OBJECT or object.__SEAM_INDEX then
-                -- If something from seam has __SEAM_CAN_BE_SCOPED (meaning it can't be scoped) as false,
+        if type(object) ~= "function" and (type(object) ~= "table" or not object.__BROID_CAN_BE_SCOPED) then
+            if object.__BROID_OBJECT or object.__BROID_INDEX then
+                -- If something from Broid has __BROID_CAN_BE_SCOPED (meaning it can't be scoped) as false,
                 -- then we should error what specifically the user tried to use
-                error(tostring(object.__SEAM_OBJECT or object.__SEAM_INDEX) .. " is not a valid scopable Seam object")
+                error(tostring(object.__BROID_OBJECT or object.__BROID_INDEX) .. " is not a valid scopable Broid object")
             else
                 -- Idk just error
-                error("Object is not a valid scopable Seam object (unknown object)")
+                error("Object is not a valid scopable Broid object (unknown object)")
             end
         end
     
@@ -57,22 +57,22 @@ function scope.__call(_, scopedObjects)
                 return
             end
 
-            -- Seam things are called as functions, so this is a wrapper
+            -- Broid things are called as functions, so this is a wrapper
             -- function that puts any created instances into the trove
             local tuple = nil
 
             if type(object) == "function" then
-                -- If it's a non-Seam function, let's pass the scope as the first parameter,
+                -- If it's a non-Broid function, let's pass the scope as the first parameter,
                 -- then pass in everything else
                 tuple = {object(self, ...)}
-            elseif object.__SEAM_OBJECT and tostring(object.__SEAM_OBJECT) == "new" then
+            elseif object.__BROID_OBJECT and tostring(object.__BROID_OBJECT) == "new" then
                 -- For New specifically, we want to actually put scope at the end. In the
-                -- future, if seam requires scopes, this will change
+                -- future, if Broid requires scopes, this will change
                 local args = {...}
                 table.insert(args, self)
                 tuple = {object(unpack(args))}
             else
-                -- Right now, scope is not passed in to most seam objects
+                -- Right now, scope is not passed in to most Broid objects
                 tuple = {object(...)}
             end
     
@@ -130,9 +130,9 @@ function scope.__call(_, scopedObjects)
 end
 
 function scope:__index(key)
-    if key == "__SEAM_OBJECT" then
+    if key == "__BROID_OBJECT" then
         return classSymbol
-    elseif key == "__SEAM_CAN_BE_SCOPED" then
+    elseif key == "__BROID_CAN_BE_SCOPED" then
         return true
     else
         return nil
