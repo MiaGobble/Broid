@@ -3,7 +3,6 @@ local rendered = {}
 
 -- Imports
 local modules = "broid.modules"
-local bucket = require(modules .. ".Bucket")
 local signal = require(modules .. ".Signal")
 local symbol = require(modules .. ".Symbol")
 
@@ -11,7 +10,6 @@ local symbol = require(modules .. ".Symbol")
 local classSymbol = symbol.new("rendered")
 
 function rendered:__call(callback)
-    local bucketInstance = bucket.new()
     local attachedSignal = signal.new()
     local instanceSymbol = symbol.new("renderedInstance")
     local lastFrame = os.clock()
@@ -24,7 +22,6 @@ function rendered:__call(callback)
 
     local activeComputation = {
         Destroy = function()
-            bucketInstance:Destroy()
             attachedSignal:Destroy()
         end,
     }
