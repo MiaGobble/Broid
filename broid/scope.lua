@@ -1,6 +1,6 @@
 -- Author: iGottic
 
-local Scope = {}
+local scope = {}
 
 -- Imports
 local modules = "broid.modules"
@@ -9,35 +9,18 @@ local symbol = require(modules .. ".symbol")
 local createDeepTraceback = require(modules .. ".createDeepTraceback")
 
 -- Variables
-local classSymbol = symbol.new("Scope")
-local meta = setmetatable({}, Scope)
+local classSymbol = symbol.new("scope")
 
-local function deepCopy(original)
-    if type(original) ~= "table" then
-        return original
-    end
-
-    local copy = {}
-    
-    for index, value in pairs(original) do
-        copy[index] = deepCopy(value)
-    end
-
-    return copy
-end
-
-function Scope.__call(_, scopedObjects)
+function scope.__call(_, scopedObjects)
     -- Scopes have been a headache to get working, since I'm a dumdum
 
     local selfClass = {}
     local selfMeta = {}
-    local instanceSymbol = symbol.new("Scope")
+    local instanceSymbol = symbol.new("scope")
 
     if not scopedObjects then
         scopedObjects = {}
     end
-
-    --scopedObjects = deepCopy(scopedObjects)
 
     function selfMeta:__index(key)
         if not key then
@@ -147,7 +130,7 @@ function Scope.__call(_, scopedObjects)
     return scopeInstance
 end
 
-function Scope:__index(key)
+function scope:__index(key)
     if key == "__SEAM_OBJECT" then
         return classSymbol
     elseif key == "__SEAM_CAN_BE_SCOPED" then
@@ -157,4 +140,4 @@ function Scope:__index(key)
     end
 end
 
-return meta
+return setmetatable({}, scope)
