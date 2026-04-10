@@ -3,14 +3,14 @@
 local destroyed = {}
 
 -- Imports
-local Symbol = require("broid.modules.symbol")
+local symbol = require("broid.modules.symbol")
 
 -- Variables
-local ClassSymbol = Symbol.new("destroyed")
+local classSymbol = symbol.new("destroyed")
 
 function destroyed:__index(Index)
     if Index == "__BROID_INDEX" then
-        return ClassSymbol
+        return classSymbol
     elseif Index == "__BROID_CAN_BE_SCOPED" then
         return false
     else
