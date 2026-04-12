@@ -31,7 +31,7 @@ return function(properties)
         local limit = getValue(properties.limit) or 10000
         local rotation = getValue(properties.rotation) or 0
         local width = font:getWidth(text)
-        local height = font:getHeight(text)
+        local height = font:getHeight()
         local originX = getValue(properties.originX) or 0
         local originY = getValue(properties.originY) or 0
         local shearX = getValue(properties.shearX) or 0
@@ -41,16 +41,16 @@ return function(properties)
         local mouseX, mouseY = love.mouse.getPosition()
         local cos = math.cos(rotation)
         local sin = math.sin(rotation)
-        local dx = mouseX - x
-        local dy = mouseY - y
-        local localX = (dx * cos + dy * sin) / scaleX + originX
-        local localY = (-dx * sin + dy * cos) / scaleY + originY
-        local left = 0
+        local deltaX = mouseX - x
+        local deltaY = mouseY - y
+        local localX = (deltaX * cos + deltaY * sin) / scaleX + originX
+        local localY = (-deltaX * sin + deltaY * cos) / scaleY + originY
         local right = width
-        local top = 0
         local bottom = height
 
-        return localX >= left and localX <= right and localY >= top and localY <= bottom
+        -- Left and top are both 0 because the origin is taken into account in the localX and localY calculations
+
+        return localX >= 0 and localX <= right and localY >= 0 and localY <= bottom
     end
 
     return function()
