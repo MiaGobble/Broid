@@ -7,7 +7,6 @@
 
 -- Imports
 local broid = require("broid")
-local timer = require("timer")
 local enum = broid.enum
 local lifetime = broid.lifetime
 local event = broid.event
@@ -15,60 +14,60 @@ local color3 = broid.color3
 
 function love.load()
     local scope = broid.scope(broid)
-    local isMoved = scope:value(false)
+    local state = scope:value("idle")
+    local rotation = scope:spring(0, 20, 0.5)
 
     local object = scope:new("drawable", {
         drawable = love.graphics.newImage("assets/img/button.png"),
         anchorPointX = 0.5,
         anchorPointY = 0.5,
+        x = 300,
+        y = 300,
+        rotation = rotation,
 
-        rotation = scope:rendered(function()
-            local time = os.clock()
-            return time * 1
-        end),
-
-        x = scope:spring(scope:computed(function(use)
-            if use(isMoved) then
-                return 350
-            else
-                return 200
+        scaleX = scope:spring(scope:computed(function(use)
+            if use(state) == "idle" then
+                return 1
+            elseif use(state) == "hover" then
+                return 1.1
+            elseif use(state) == "press" then
+                return 0.8
             end
-        end), 20, 0.5),
+        end), 30, 0.5),
 
-        y = scope:spring(scope:computed(function(use)
-            if use(isMoved) then
-                return 350
-            else
-                return 200
+        scaleY = scope:spring(scope:computed(function(use)
+            if use(state) == "idle" then
+                return 1
+            elseif use(state) == "hover" then
+                return 1.1
+            elseif use(state) == "press" then
+                return 0.8
             end
-        end), 15, 0.5),
+        end), 30, 0.5),
        
         [event.mouseEnter] = function()
             print("Mouse entered!")
+            state.value = "hover"
         end,
 
         [event.mouseLeave] = function()
             print("Mouse left!")
+            state.value = "idle"
         end,
 
         [event.mouseButton1Down] = function()
             print("Mouse button 1 down!")
+            state.value = "press"
         end,
 
         [event.mouseButton1Up] = function()
             print("Mouse button 1 up!")
+            state.value = "idle"
+            rotation.velocity = math.pi / 2
         end,
     })
-
-    timer.after(3, function()
-        isMoved.value = true
-    end)
 end
 
 function love.draw()
     broid.draw()
-end
-
-function love.update(delta)
-    timer.update(delta)
 end
