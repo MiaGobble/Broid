@@ -11,6 +11,8 @@
     @prop originY : number
     @prop shearX : number
     @prop shearY : number
+    @anchorPointX : number
+    @anchorPointY : number
     @prop font : Font
 ]]
 
@@ -28,14 +30,15 @@ return function(properties)
         local x = getValue(properties.x)
         local y = getValue(properties.y)
         local font = getValue(properties.font) or love.graphics.getFont()
-        local limit = getValue(properties.limit) or 10000
         local rotation = getValue(properties.rotation) or 0
         local width = font:getWidth(text)
         local height = font:getHeight()
+        local anchorPointX = getValue(properties.anchorPointX) or 0
+        local anchorPointY = getValue(properties.anchorPointY) or 0
         local originX = getValue(properties.originX) or 0
         local originY = getValue(properties.originY) or 0
-        local shearX = getValue(properties.shearX) or 0
-        local shearY = getValue(properties.shearY) or 0
+        local limit = getValue(properties.limit) or width
+        local align = getValue(properties.align) or "center"
         local scaleX = getValue(properties.scaleX) or 1
         local scaleY = getValue(properties.scaleY) or 1
         local mouseX, mouseY = love.mouse.getPosition()
@@ -43,18 +46,35 @@ return function(properties)
         local sin = math.sin(rotation)
         local deltaX = mouseX - x
         local deltaY = mouseY - y
-        local localX = (deltaX * cos + deltaY * sin) / scaleX + originX
-        local localY = (-deltaX * sin + deltaY * cos) / scaleY + originY
-        local right = width
-        local bottom = height
+        local localX = (deltaX * cos + deltaY * sin) / scaleX + originX + anchorPointX * width
+        local localY = (-deltaX * sin + deltaY * cos) / scaleY + originY + anchorPointY * height
 
-        -- Left and top are both 0 because the origin is taken into account in the localX and localY calculations
-
-        return localX >= 0 and localX <= right and localY >= 0 and localY <= bottom
+        return localX >= 0 and localX <= width and localY >= 0 and localY <= height
     end
 
     return function()
         love.graphics.setColor(unpack(getValue(properties.color)))
-        love.graphics.printf(getValue(properties.text), getValue(properties.x), getValue(properties.y), getValue(properties.limit) or math.huge, getValue(properties.align) or "left", getValue(properties.rotation) or 0, getValue(properties.scaleX) or 1, getValue(properties.scaleY) or 1, getValue(properties.originX) or 0, getValue(properties.originY) or 0, getValue(properties.shearX) or 0, getValue(properties.shearY) or 0)
+
+        -- bear in mind anchor points too, which are not built into love2d
+        -- we do this by offsetting the origin based on the anchor point and text dimensions
+
+        local width = (getValue(properties.font) or love.graphics.getFont()):getWidth(getValue(properties.text))
+        local height = (getValue(properties.font) or love.graphics.getFont()):getHeight()
+
+        love.graphics.printf(
+            getValue(properties.text),
+            getValue(properties.x),
+            getValue(properties.y),
+            getValue(properties.limit) or width,
+            getValue(properties.align) or "center",
+            getValue(properties.rotation) or 0,
+            getValue(properties.scaleX) or 1,
+            getValue(properties.scaleY) or 1,
+            (getValue(properties.originX) or 0) + (getValue(properties.anchorPointX) or 0) * width,
+            (getValue(properties.originY) or 0) + (getValue(properties.anchorPointY) or 0) * height,
+            getValue(properties.shearX) or 0,
+            getValue(properties.shearY) or 0
+        )
+
     end
 end

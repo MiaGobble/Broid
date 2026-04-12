@@ -4,6 +4,8 @@
     @prop y : number
     @prop radius : number
     @prop segments : number
+    @prop anchorPointX : number
+    @prop anchorPointY : number
     @prop visible : boolean
 ]]
 
@@ -18,10 +20,17 @@ return function(properties)
 
     function properties:IsMouseInBounds()
         local mouseX, mouseY = love.mouse.getPosition()
-        local dx = mouseX - getValue(properties.x)
-        local dy = mouseY - getValue(properties.y)
-        local distanceSquared = dx * dx + dy * dy
-        return distanceSquared <= getValue(properties.radius) * getValue(properties.radius)
+        local x = getValue(properties.x)
+        local y = getValue(properties.y)
+        local radius = getValue(properties.radius)
+        local anchorPointX = getValue(properties.anchorPointX) or 0
+        local anchorPointY = getValue(properties.anchorPointY) or 0
+        local centerX = x - anchorPointX * radius
+        local centerY = y - anchorPointY * radius
+        local deltaX = mouseX - centerX
+        local deltaY = mouseY - centerY
+
+        return deltaX * deltaX + deltaY * deltaY <= radius * radius
     end
 
     return function()

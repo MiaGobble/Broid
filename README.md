@@ -116,7 +116,7 @@ Refer to the below table to know what is supported, and to what degree
 |--------------|-----------------|----------------|
 | Arc | ✖ | ✖ |
 | Circle | ✔ | ✔ |
-| Drawable | ✖ | ✖ |
+| Drawable | ✔ | ✔ |
 | Mesh | ✖ | ✖ |
 | Array Texture | ✖ | ✖ |
 | Quad | ✖ | ✖ |

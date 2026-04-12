@@ -13,7 +13,8 @@ local event = require("broid.event")
 
 local elements = {
     circle = require(path .. ".circle"),
-    text = require(path .. ".text")
+    text = require(path .. ".text"),
+    drawable = require(path .. ".drawable")
 }
 
 -- Variables

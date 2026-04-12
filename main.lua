@@ -17,12 +17,14 @@ function love.load()
     local scope = broid.scope(broid)
     local isMoved = scope:value(false)
 
-    local object = scope:new("text", {
-        text = "Hello, Broid!",
+    local object = scope:new("drawable", {
+        drawable = love.graphics.newImage("assets/img/button.png"),
+        anchorPointX = 0.5,
+        anchorPointY = 0.5,
 
         rotation = scope:rendered(function()
             local time = os.clock()
-            return time * 20
+            return time * 1
         end),
 
         x = scope:spring(scope:computed(function(use)
@@ -40,14 +42,6 @@ function love.load()
                 return 200
             end
         end), 15, 0.5),
-
-        color = scope:spring(scope:computed(function(use)
-            if use(isMoved) then
-                return color3.new(1, 0, 0)
-            else
-                return color3.new(0, 1, 0)
-            end
-        end), 10, 1),
        
         [event.mouseEnter] = function()
             print("Mouse entered!")
