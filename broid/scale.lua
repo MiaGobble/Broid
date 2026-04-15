@@ -2,6 +2,7 @@ local scale = {}
 
 -- Imports
 local value = require("broid.value")
+local drawCache = require("broid.drawCache")
 
 function scale.x(xScale)
     local scaleValue = value(0)
@@ -11,6 +12,7 @@ function scale.x(xScale)
     end
 
     updateScaleValue()
+    drawCache.add(updateScaleValue)
 
     return scaleValue
 end
@@ -23,6 +25,7 @@ function scale.y(yScale)
     end
 
     updateScaleValue()
+    drawCache.add(updateScaleValue)
 
     return scaleValue
 end
