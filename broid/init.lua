@@ -19,6 +19,7 @@ broid.getValue = require("broid.getValue")
 broid.isState = require("broid.isState")
 broid.color3 = require("broid.color3")
 broid.rendered = require("broid.rendered")
+broid.scale = require("broid.scale")
 
 -- Draw callback
 function broid.draw()

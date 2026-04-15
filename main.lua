@@ -11,6 +11,7 @@ local enum = broid.enum
 local lifetime = broid.lifetime
 local event = broid.event
 local color3 = broid.color3
+local scale = broid.scale
 
 function love.load()
     local scope = broid.scope(broid)
@@ -21,8 +22,8 @@ function love.load()
         drawable = love.graphics.newImage("assets/img/button.png"),
         anchorPointX = 0.5,
         anchorPointY = 0.5,
-        x = 300,
-        y = 300,
+        x = scale.x(0.5),
+        y = scale.y(0.5),
         rotation = rotation,
 
         scaleX = scope:spring(scope:computed(function(use)
