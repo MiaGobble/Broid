@@ -1,3 +1,24 @@
+--[=[
+    @class new
+
+    Creates a new object, given an element type and a properties table. The element type must be one of the following:
+    - "circle"
+    - "text"
+    - "drawable"
+
+    This is still under development, and more types are being added as this is developed.
+
+    ```lua
+    local new = broid.new
+
+    new("circle", {
+        -- Properties for the circle element
+    })
+    ```
+
+    Objects created with `new` return an element.
+]=]
+
 local new = {}
 
 -- Imports

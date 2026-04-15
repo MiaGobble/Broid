@@ -1,4 +1,24 @@
--- Author: iGottic
+--[=[
+    @class computed
+
+    A state that reacts to other states.
+
+    ```lua
+    local computed = broid.computed
+    local value = broid.value
+    local foo = value.new(1)
+    local bar = value.new(2)
+
+    local sum = computed(function(use)
+        return use(foo) + use(bar)
+    end)
+
+    print(sum.value) -- 3
+
+    foo.value = 3
+    print(sum.value) -- 5
+    ```
+]=]
 
 local computed = {}
 

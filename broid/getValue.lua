@@ -1,4 +1,16 @@
--- Author: iGottic
+--[=[
+    @class getValue
+
+    A utility for retrieving values from different types of objects.
+
+    ```lua
+    local value = broid.value
+    local getValue = broid.getValue
+
+    local foo = value.new(1)
+    print(getValue(foo)) -- 1
+    ```
+]=]
 
 local getValue = {}
 

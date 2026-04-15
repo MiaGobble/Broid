@@ -1,4 +1,22 @@
--- Author: iGottic
+--[=[
+    @class spring
+
+    A spring state for animating objects.
+
+    ```lua
+    local spring = broid.spring
+    local new = broid.new
+    local value = broid.value
+
+    local target = value(0)
+
+    new("circle", {
+        x = spring(target, 30, 1) -- Animates target with a speed of 30 and dampening of 1
+    })
+    
+    target.value = 100 -- Animate to x = 100
+    ```
+]=]
 
 local Spring = {}
 

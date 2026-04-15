@@ -1,4 +1,21 @@
--- Author: iGottic
+--[=[
+    @class destroyed
+
+    A declaration in `new` that calls a function when an element is destroyed.
+    
+    ```lua
+    local destroyed = broid.destroyed
+    local new = broid.new
+
+    local element = new("Circle", {
+        [destroyed] = function()
+            print("Element was destroyed!")
+        end
+    })
+    
+    element:Destroy() -- Prints "Element was destroyed!"
+    ```
+]=]
 
 local destroyed = {}
 

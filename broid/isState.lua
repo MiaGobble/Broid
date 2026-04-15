@@ -1,4 +1,18 @@
--- Author: iGottic
+--[=[
+    @class isState
+
+    A utility for checking if a value is a state object.
+
+    ```lua
+    local value = broid.value
+    local isState = broid.isState
+
+    local foo = value.new(1)
+    print(isState(foo)) -- true
+    print(isState(123)) -- false
+    print(isState("Hello")) -- false
+    ```
+]=]
 
 local isState = {}
 

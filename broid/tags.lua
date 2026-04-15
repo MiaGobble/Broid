@@ -1,4 +1,19 @@
--- Author: iGottic
+--[=[
+    @class tags
+
+    A declaration used in `new` for declaring tags on an element, which can be retrieved with `element:GetTags()`
+
+    ```lua
+    local new = broid.new
+    local tags = broid.tags
+
+    local circle = new("circle", {
+        [tags] = {"x", "y", "z"}
+    })
+    
+    print(circle:GetTags()[1]) -- "x"
+    ```
+]=]
 
 local tags = {}
 

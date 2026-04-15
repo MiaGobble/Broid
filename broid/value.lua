@@ -1,4 +1,26 @@
--- Author: iGottic
+--[=[
+    @class value
+
+    A source state to be reacted to.
+
+    ```lua
+    local value = broid.value
+
+    local foo = value("hi!")
+
+    print(foo.value) -- "hi!"
+
+    foo.value = "hello!"
+    print(foo.value) -- "hello!"
+]=]
+
+--[=[
+    @prop value any
+    @within value
+
+    The value's value.
+]=]
+
 local value = {}
 
 -- Imports

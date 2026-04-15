@@ -1,20 +1,9 @@
---[[
-    @prop text : string | table
-    @prop x : number
-    @prop y : number
-    @prop limit : number
-    @prop align : alignMode
-    @prop rotation : number
-    @prop scaleX : number
-    @prop scaleY : number
-    @prop originX : number
-    @prop originY : number
-    @prop shearX : number
-    @prop shearY : number
-    @anchorPointX : number
-    @anchorPointY : number
-    @prop font : Font
-]]
+--[=[
+    @type text {text : string | table, x : number, y : number, limit : number, align : alignMode, rotation : number, scaleX : number, scaleY : number, originX : number, originY : number, shearX : number, shearY : number, anchorPointX : number, anchorPointY : number, font : Font}
+    @within new
+
+    Basic text based on `love.graphics.printf`.
+]=]
 
 -- Imports
 local getValue = require("broid.getValue")

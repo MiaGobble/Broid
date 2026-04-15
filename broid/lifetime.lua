@@ -1,4 +1,17 @@
--- Author: iGottic
+--[=[
+    @class lifetime
+
+    A utility for managing the lifetime of objects. When the end of the lifetime is reached, element:Destroy() is called.
+
+    ```lua
+    local lifetime = broid.lifetime
+    local new = broid.new
+
+    local element = new("Circle", {
+        [lifetime] = 5, -- Lifetime of 5 seconds
+    })
+    ```
+]=]
 
 local lifetime = {}
 

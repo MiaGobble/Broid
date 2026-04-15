@@ -1,18 +1,7 @@
---[[
-    @prop drawable : Drawable
-    @prop x : number
-    @prop y : number
-    @prop rotation : numbeR
-    @prop scaleX : number
-    @prop scaleY : number
-    @prop originOffsetX : number
-    @prop originOffsetY : number
-    @prop shearX : number
-    @prop shearY : number
-    @prop anchorPointX : number
-    @prop anchorPointY : number
-    @prop visible : boolean
-]]
+--[=[
+    @type drawable {drawable : Drawable, x : number, y : number, rotation : numbeR, scaleX : number, scaleY : number, originOffsetX : number, originOffsetY : number, shearX : number, shearY : number, anchorPointX : number, anchorPointY : number, visible : boolean}
+    @within new
+]=]
 
 -- Imports
 local getValue = require("broid.getValue")

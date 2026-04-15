@@ -1,13 +1,9 @@
---[[
-    @prop drawMode : enum.drawMode
-    @prop x : number
-    @prop y : number
-    @prop radius : number
-    @prop segments : number
-    @prop anchorPointX : number
-    @prop anchorPointY : number
-    @prop visible : boolean
-]]
+--[=[
+    @type circle {drawMode : enum.drawMode, x : number, y : number, radius : number, segments : number, anchorPointX : number, anchorPointY : number, visible : boolean}
+    @within new
+
+    A basic circle element based on `love.graphics.circle`.
+]=]
 
 -- Imports
 local getValue = require("broid.getValue")

@@ -1,4 +1,21 @@
--- Author: iGottic
+--[=[
+    @class rendered
+
+    A utility for creating rendered states that always update every frame.
+
+    ```lua
+    local rendered = broid.rendered
+    local new = broid.new
+
+    local element = new("Circle", {
+        x = rendered(function(deltaTime)
+            -- This function is called every frame. deltaTime is the time since the last frame.
+            return os.clock() % 100
+        end),
+    })
+    ```
+]=]
+
 local rendered = {}
 
 -- Imports

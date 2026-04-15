@@ -1,4 +1,68 @@
--- Author: iGottic
+--[=[
+    @class scope
+
+    A utility for creating scoped environments that allow for encapsulation of objects.
+
+    ```lua
+    local scope = broid.scope
+
+    local myScope = scope(broid) -- Create a new scope with the entire Broid library available
+    local customScope = scope({print = print}) -- Create a new scope with only the print function available
+
+    local circle = myScope:new("Circle", {radius = 50}) -- Create a new Circle in myScope
+
+    myScope:Destroy() -- Destroys the circle and any other objects created in myScope
+    ```
+]=]
+
+--[=[
+    @method InnerScope
+    @within scope
+    @param newScopedObjects : {[any] : any}?
+    @return scope
+
+    Creates a scope that extends from the current scope. When the original scope is cleaned up, the inner scope will also be cleaned up.
+
+    ```lua
+    local innerScope = myScope:InnerScope({myCustomObject = myCustomObject})
+    ```
+]=]
+
+--[=[
+    @method AddObject
+    @within scope
+    @param object : any
+
+    Adds an object to the scope. When the scope is destroyed, the object will also be destroyed.
+
+    ```lua
+    myScope:AddObject(myCustomObject)
+    ```
+]=]
+
+--[=[
+    @method RemoveObject
+    @within scope
+    @param object : any
+
+    Removes an object from the scope. The object will be destroyed and will no longer be part of the scope.
+
+    ```lua
+    myScope:RemoveObject(myCustomObject)
+    ```
+]=]
+
+--[=[
+    @method Destroy
+    @within scope
+
+    Destroys the scope and all objects within it.
+
+    ```lua
+    myScope:Destroy()
+    ```
+]=]
+
 local scope = {}
 
 -- Imports
